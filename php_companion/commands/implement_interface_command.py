@@ -42,22 +42,22 @@ class ImplementInterfaceCommand(sublime_plugin.TextCommand):
             method_content = ""
             for method in methods:
                 if self.class_has_method(method[0]):
-                    print('method ' + method[0] + '() is already present in this class')
-                    continue;
-
-                method_content += "\n"
+                    continue
+                method_content += indent + "/**\n"
+                method_content += indent + " * @see " + interface + "::" + method[0] + "()\n"
                 if author:
-                    method_content += indent + "/**\n"
                     method_content += indent + " * @author " + author + "\n"
-                    method_content += indent + " */\n"
+                method_content += indent + " */\n"
                 method_content += indent + method[1].strip() + "\n" + indent + "{\n" + indent + "}\n"
-
+                method_content += "\n"
             if len(method_content) > 0:
                 new_content += "\n" + indent + "/** Start implementation for " + interface + " **/\n"
-                new_content += method_content
-                new_content += "\n" + indent + "/** End implementation for " + interface + " **/\n"
+                new_content += "\n" + method_content
+                new_content += indent + "/** End implementation for " + interface + " **/\n"
 
-        print(new_content)
+        if len(new_content.strip()) == 0:
+            return
+
         line = self.view.line(region)
         self.view.insert(edit, line.end(), new_content)
 

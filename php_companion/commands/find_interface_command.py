@@ -8,29 +8,27 @@ from ..settings import get_setting
 class FindInterfaceCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        print('finding interfaces')
         view   = self.view
         region = view.find(r"implements[^\{]+\{", 0)
         if region.empty():
             return sublime.status_message('No class definition found')
+
         interfaces = view.substr(region).replace("implements", "").replace("{", "")
         interfaces = interfaces.split(",")
-        print(interfaces)
+
         # def on_done(index):
         #     self.view.run_command("implement_interface", {"insert_point": region.end(), "interface": interface, "file": files[index][0]})
 
         new_content = "\n"
         for interface in interfaces:
-            print(interface)
             interface = interface.strip()
             files = view.window().lookup_symbol_in_index(interface)
+
             if len(files) == 0:
                 continue
 
             if len(files) == 1:
-                args = {"insert_point": region.end(), "interface": interface, "file": files[0][0]}
-                print(args)
-                self.view.run_command("implement_interface", args)
+                self.view.run_command("implement_interface", {"interface": interface, "file": files[0][0]})
                 continue
 
             if len(files) > 1:

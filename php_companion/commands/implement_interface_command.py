@@ -7,7 +7,9 @@ from ..settings import get_setting
 
 class ImplementInterfaceCommand(sublime_plugin.TextCommand):
 
-    def run(self, edit, insert_point, interface, file):
+    def run(self, edit, interface, file):
+        insert_point = self.view.sel()[0].begin()
+
         with open(file, "r") as interface_file:
             content = interface_file.read()
 
@@ -39,7 +41,7 @@ class ImplementInterfaceCommand(sublime_plugin.TextCommand):
             return
 
         if len(new_content) > 0:
-            new_content = "\n" + indent + "/** Start implementation for " + interface + " **/\n\n" + indent + new_content + "\n"
+            new_content = "/** Start implementation for " + interface + " **/\n\n" + indent + new_content + "\n"
             new_content += "\n" + indent + "/** End implementation for " + interface + " **/\n"
 
         self.view.insert(edit, insert_point, new_content)

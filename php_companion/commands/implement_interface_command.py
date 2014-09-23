@@ -32,17 +32,15 @@ class ImplementInterfaceCommand(sublime_plugin.TextCommand):
                 method_content += indent + " * @author " + author + "\n"
             method_content += indent + " */\n"
             method_content += indent + method[1].strip() + "\n" + indent + "{\n" + indent + "}\n"
-            print(method_content)
-
-            new_content += method_content + "\n"
+            new_content    += method_content + "\n"
 
         new_content = new_content.strip()
         if len(new_content) == 0:
             return
 
-        if len(new_content) > 0:
-            new_content = "/** Start implementation for " + interface + " **/\n\n" + indent + new_content + "\n"
-            new_content += "\n" + indent + "/** End implementation for " + interface + " **/\n"
+        # if len(new_content) > 0:
+        #     new_content = "\n" + indent + "/** Start implementation for " + interface + " **/\n\n" + indent + new_content + "\n"
+        #     new_content += "\n" + indent + "/** End implementation for " + interface + " **/\n"
 
         self.view.insert(edit, insert_point, new_content)
 

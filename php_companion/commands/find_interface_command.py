@@ -8,79 +8,89 @@ from ..settings import get_setting
 class FindInterfaceCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
+        print('finding interfaces')
         view   = self.view
         region = view.find(r"implements[^\{]+\{", 0)
         if region.empty():
             return sublime.status_message('No class definition found')
         interfaces = view.substr(region).replace("implements", "").replace("{", "")
         interfaces = interfaces.split(",")
+        print(interfaces)
+        # def on_done(index):
+        #     self.view.run_command("implement_interface", {"insert_point": region.end(), "interface": interface, "file": files[index][0]})
 
         new_content = "\n"
-        indent      = get_setting('line_indent', "    ")
-        author      = get_setting('author', None)
         for interface in interfaces:
+            print(interface)
             interface = interface.strip()
             files = view.window().lookup_symbol_in_index(interface)
-
-            if len(files) > 1:
-                print('more than one file found for interface ' + interface)
-                print(files)
-                print('not handling multiple files yet!')
+            if len(files) == 0:
                 continue
 
-            with open(files[0][0], "r") as interface_file:
-                content = interface_file.read()
+            if len(files) == 1:
+                args = {"insert_point": region.end(), "interface": interface, "file": files[0][0]}
+                print(args)
+                self.view.run_command("implement_interface", args)
+                continue
 
-            methods = self.extract_methods_from_string(content)
-            if len(methods) == 0:
-                print('no methods found in interface ' + interface)
-                continue;
+            if len(files) > 1:
+                continue
 
-            method_content = ""
-            for method in methods:
-                if self.class_has_method(method[0]):
-                    continue
-                method_content += indent + "/**\n"
-                method_content += indent + " * @see " + interface + "::" + method[0] + "()\n"
-                if author:
-                    method_content += indent + " * @author " + author + "\n"
-                method_content += indent + " */\n"
-                method_content += indent + method[1].strip() + "\n" + indent + "{\n" + indent + "}\n"
-                method_content += "\n"
-            if len(method_content) > 0:
-                new_content += "\n" + indent + "/** Start implementation for " + interface + " **/\n"
-                new_content += "\n" + method_content
-                new_content += indent + "/** End implementation for " + interface + " **/\n"
+        #     if len(files) > 1:
+        #         print('more than one file found for interface ' + interface)
+        #         print(files)
+        #         print('not handling multiple files yet!')
+        #         continue
 
-        if len(new_content.strip()) == 0:
-            return
+        #     with open(files[0][0], "r") as interface_file:
+        #         content = interface_file.read()
 
-        line = self.view.line(region)
-        self.view.insert(edit, line.end(), new_content)
+        #     methods = self.extract_methods_from_string(content)
+        #     if len(methods) == 0:
+        #         print('no methods found in interface ' + interface)
+        #         continue;
 
-    def extract_methods_from_string(self, str):
-        methods = []
-        raw = re.findall(r"\s?public function[^;]+", str)
+        #     method_content = ""
+        #     for method in methods:
+        #         if self.class_has_method(method[0]):
+        #             continue
+        #         method_content += indent + "/**\n"
+        #         method_content += indent + " * @see " + interface + "::" + method[0] + "()\n"
+        #         if author:
+        #             method_content += indent + " * @author " + author + "\n"
+        #         method_content += indent + " */\n"
+        #         method_content += indent + method[1].strip() + "\n" + indent + "{\n" + indent + "}\n"
+        #         method_content += "\n"
+        #     if len(method_content) > 0:
+        #         new_content += "\n" + indent + "/** Start implementation for " + interface + " **/\n"
+        #         new_content += "\n" + method_content
+        #         new_content += indent + "/** End implementation for " + interface + " **/\n"
 
-        if len(raw) == 0:
-            return methods
+        # if len(new_content.strip()) == 0:
+        #     return
 
-        for line in raw:
-            name = re.findall(r"function\s+([^\(]+)", line)
-            methods.append((name[0], line))
+        # line = self.view.line(region)
+        # self.view.insert(edit, line.end(), new_content)
 
-        return methods
+    # def extract_methods_from_string(self, str):
+    #     methods = []
+    #     raw = re.findall(r"\s?public function[^;]+", str)
 
-    def class_has_method(self, method):
-        region = self.view.find(r"" + method + "\(", 0)
-        if not region.empty():
-            return True
+    #     if len(raw) == 0:
+    #         return methods
 
-        return False
+    #     for line in raw:
+    #         name = re.findall(r"function\s+([^\(]+)", line)
+    #         methods.append((name[0], line))
 
-# class AddInterfaceMethodsCommand(sublime_plugin.TextCommand):
+    #     return methods
 
-#     def run(self, edit):
+    # def class_has_method(self, method):
+    #     region = self.view.find(r"" + method + "\(", 0)
+    #     if not region.empty():
+    #         return True
+
+    #     return False
 
         # line = view.line(region)
         # view.insert(edit, line.end(), text)

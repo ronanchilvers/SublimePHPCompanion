@@ -5,20 +5,39 @@ import re
 
 from ..settings import get_setting
 
-class ImplementInterfaceCommand(sublime_plugin.TextCommand):
+class GenerateInterfaceCommand(sublime_plugin.TextCommand):
 
-    def run(self, edit, interface, file):
-        insert_point = self.view.sel()[0].begin()
+    def run(self, edit, insert_point, interface, files):
+        self.edit         = edit
+        self.insert_point = insert_point
+        self.files        = files
+        self.interface    = interface
+
+        if len(files) == 1:
+            print('here')
+            print(self.files)
+            self.insert_interface(files[0][1])
+
+        elif len(files) > 1:
+            self.view.window().show_quick_panel(self.files, self.on_done)
+
+    def on_done(self, index):
+        if index > -1:
+            print('here')
+            print(self.files)
+            self.insert_interface(self.files[index][1])
+
+    def insert_interface(self, file):
 
         with open(file, "r") as interface_file:
             content = interface_file.read()
 
         methods = self.extract_methods_from_string(content)
         if len(methods) == 0:
-            print('no methods found in interface ' + interface)
+            print('no methods found in interface ' + self.interface)
             return
 
-        new_content = ""
+        content = ""
         indent      = get_setting('line_indent', "    ")
         author      = get_setting('author', None)
         for method in methods:
@@ -27,22 +46,18 @@ class ImplementInterfaceCommand(sublime_plugin.TextCommand):
 
             method_content = ""
             method_content += indent + "/**\n"
-            method_content += indent + " * @see " + interface + "::" + method[0] + "()\n"
+            method_content += indent + " * @see " + self.interface + "::" + method[0] + "()\n"
             if author:
                 method_content += indent + " * @author " + author + "\n"
             method_content += indent + " */\n"
             method_content += indent + method[1].strip() + "\n" + indent + "{\n" + indent + "}\n"
-            new_content    += method_content + "\n"
+            content    += method_content + "\n"
 
-        new_content = new_content.strip()
-        if len(new_content) == 0:
+        content = content.strip()
+        if len(content) == 0:
             return
 
-        # if len(new_content) > 0:
-        #     new_content = "\n" + indent + "/** Start implementation for " + interface + " **/\n\n" + indent + new_content + "\n"
-        #     new_content += "\n" + indent + "/** End implementation for " + interface + " **/\n"
-
-        self.view.insert(edit, insert_point, new_content)
+        self.view.run_command('insert_content', { "insert_point": self.insert_point, "content": "\n\n" + indent + content });
 
     def extract_methods_from_string(self, str):
         methods = []

@@ -33,7 +33,7 @@ def find_symbol(symbol, window):
             with open(normalize_to_system_style_path(file[0]), "rb") as f:
                 with contextlib.closing(mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ)) as m:
                     for match in re.findall(pattern, m):
-                        namespaces.append([match.decode('utf-8') + "\\" + symbol, file[1]])
+                        namespaces.append([match.decode('utf-8') + "\\" + symbol, file[0]])
                         break
 
     if get_setting('allow_use_from_global_namespace', False):

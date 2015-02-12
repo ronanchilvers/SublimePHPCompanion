@@ -30,17 +30,20 @@ class FindInterfaceCommand(sublime_plugin.TextCommand):
         for item in stored:
             view.sel().add(sublime.Region(item[0], item[1]))
 
+        files = []
         for interface in interfaces:
             interface = interface.strip()
             print('interface is ' + interface)
-            files = find_symbol(interface, view.window())
+            interfaceFiles = find_symbol(interface, view.window())
+            print('interfaceFiles type : ' + type(interfaceFiles).__name__)
             if -1 < interface.find('Interface'):
                 print('munging interface name a little from ' + interface + ' to ' + interface.replace('Interface', ''))
-                files = files + find_symbol(interface.replace('Interface', ''), view.window())
-
-            if len(files) == 0:
+                interfaceFiles = interfaceFiles + find_symbol(interface.replace('Interface', ''), view.window())
+            if len(interfaceFiles) == 0:
                 print('no files found for symbol ' + interface)
                 continue
+            print('found ' + str(len(interfaceFiles)) + ' for symbol ' + interface)
+            files = files + interfaceFiles
+        print('found ' + str(len(files)) + ' in total')
 
-            print('found ' + str(len(files)) + ' for symbol ' + interface)
-            view.run_command("generate_interface", { "insert_point": region.end() - 1, "interface": interface, "files": files })
+        view.run_command("generate_interface", { "insert_point": region.end() - 1, "files": files })

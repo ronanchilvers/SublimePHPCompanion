@@ -7,15 +7,12 @@ from ..settings import get_setting
 
 class GenerateInterfaceCommand(sublime_plugin.TextCommand):
 
-    def run(self, edit, insert_point, interface, files):
+    def run(self, edit, insert_point, files):
         self.edit         = edit
         self.insert_point = insert_point
         self.files        = files
-        self.interface    = interface
-
         if len(files) == 1:
-            print('here')
-            print(self.files)
+            self.interface = self.files[index][0][0]
             self.insert_interface(files[0][1])
 
         elif len(files) > 1:
@@ -23,8 +20,7 @@ class GenerateInterfaceCommand(sublime_plugin.TextCommand):
 
     def on_done(self, index):
         if index > -1:
-            print('here')
-            print(self.files)
+            self.interface = self.files[index][0]
             self.insert_interface(self.files[index][1])
 
     def insert_interface(self, file):

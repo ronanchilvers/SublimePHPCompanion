@@ -1,4 +1,4 @@
-# Sublime PHP Companion [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=dhalsimfr&url=https://github.com/erichard/SublimePHPCompanion&title=SublimePHPCompanion&language=&tags=github&category=software)
+# Sublime PHP Companion
 
 This Sublime Text 3 Package provides cool stuff for PHP 5.3+ coding session.
 
@@ -14,32 +14,30 @@ This plugin is the successor of [SublimeCTagsPHP](https://github.com/erichard/Su
 
 Just search for PHP Companion in package control and you're ready.
 
-### Git clone
-Clone this repo in your Sublime Text 3 Package dir.
+### Keybinding
 
-```
-$ git clone https://github.com/erichard/SublimePHPCompanion "PHP Companion"
-```
+The package no longer provides keybindings. You will have to install your own shortcuts. The [Default.sublime-keymap-sample](/Default.sublime-keymap-sample) will give you the shortcuts I personally use.
 
 ## Commands
 
 ### find_use
 
-Just bring your cursor hover a class name, hit the `F5` key (default but customizable) and that's it.
+Just bring your cursor hover a class name, hit the `F5` key (personal shortcut) and that's it.
 
 It will show you the different namespace that match your class, pick up one and your done.
 
-PHP Companion will sort your uses statement in alphabetical order.
+PHP Companion will sort your uses statement in alphabetical order. This can be
+configured to sort by line length with the `use_sort_length` user setting.
 
 ### expand_fqcn
 
 This command expand the class under the cursor to its FQCN (Fully Qualified Class Name).
-You have two keys for this command `F6` and `shift+F6` that respectively expand
+You have two keys for this command `F6` and `shift+F6` (personal shortcut) that respectively expand
 without and with the leading namespace separator `\`.
 
 ### import_namespace
 
-Just hit the `F4` key, it will add the namespace definition based on the absolute
+Just hit the `F4` key (personal shortcut), it will add the namespace definition based on the absolute
 filename of the current file. I use a simple trick to determine where the
 namespace begun, actually the namespace will start at the first CamelCased
 folder.
@@ -51,8 +49,37 @@ the status bar.
 
 ### goto_definition_scope
 
-Hit `shift+F12` to search for a method definition based on the current scope. It will fallback to
+Hit `shift+F12` (personal shortcut) to search for a method definition based on the current scope. It will fallback to
 the "goto_definition" command if a match was not found.
+
+### insert_php_constructor_property
+
+Hit `F7` (personal shortcut) to insert both a constructor argument and its according property. The property will be `private` by default but you can change it with the `visibility` setting.
+
+### padawan_start_server
+
+This command will start padawan.php server, so that you'll be able to get completions
+
+### padawan_stop_server
+
+This command will stop padawan.php server, so that you'll have default sublime completions
+
+### padawan_generate_index
+
+This command will generate index for the composer project that current file belongs to.
+**Warning:** This command require a filename so the command won't work in an unsaved buffer.
+
+### padawan_plugin_add
+
+This command will install(download and register) plugin by it's name.
+You can find [plugins list here](
+https://github.com/mkusher/padawan.php/wiki/Plugins-list)
+**Warning:** You have to configure composer command for plugin installation
+
+### padawan_plugin_remove
+
+This command will remove plugin.
+**Warning:** You have to configure composer command for plugin removing
 
 ## Settings
 
@@ -99,6 +126,15 @@ adding a namespace_prefix of 'Vendor\Project' would result in a resolved namespa
 namespace Vendor\Project\Foo;
 ```
 
+### use_sort_length
+
+When importing use statements with the `find_use` command, sort statements by the length of the line.
+
+### padawan_composer
+
+Command for running composer, e.g. `php /path/to/composer.phar` or `composer.phar` depending
+on the place, where you've installed composer.
+
 ## Licence
 
 All of Sublime PHP Companion is licensed under the MIT license.
@@ -122,8 +158,3 @@ All of Sublime PHP Companion is licensed under the MIT license.
   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
-
-
-## Support me
-
-If you like this plugin and want to offer me a beer or something you can use the flattr button next to the title ;-)
